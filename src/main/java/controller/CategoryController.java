@@ -23,7 +23,7 @@ import util.Constant;
 	    fileSizeThreshold = 1024 * 1024 * 2, // 2MB
 	    maxFileSize = 1024 * 1024 * 10,      // 10MB
 	    maxRequestSize = 1024 * 1024 * 50 )
-@WebServlet(urlPatterns = { "/admin/categories", "/admin/category/add", "/admin/category/edit",
+@WebServlet(urlPatterns = { "/admin/categories", "/admin/category", "/admin/category/add", "/admin/category/edit",
 		"/admin/category/delete" })
 public class CategoryController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -42,7 +42,7 @@ public class CategoryController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ICategoryService categoryService = new CategoryService();
 		String uri = request.getRequestURI();
-		if (uri.contains("categories")) {
+		if (uri.contains("categories") || uri.equals(request.getContextPath() + "/admin/category")) {
 			List<Category> categories = categoryService.findAll();
 			request.setAttribute("categories", categories);
 			request.getRequestDispatcher("/views/admin/category/list.jsp").forward(request, response);
@@ -52,11 +52,13 @@ public class CategoryController extends HttpServlet {
 			int id = Integer.parseInt(request.getParameter("id"));
 			Category category = categoryService.findById(id);
 			request.setAttribute("category", category);
+			List<Category> categories = categoryService.findAll();
+			request.setAttribute("categories", categories);
 			request.getRequestDispatcher("/views/admin/category/edit.jsp").forward(request, response);
 		} else if (uri.contains("delete")) {
 			int id = Integer.parseInt(request.getParameter("id"));
 			categoryService.delete(id);
-			response.sendRedirect(request.getContextPath() + "/admin/categories");
+			response.sendRedirect(request.getContextPath() + "/admin/category");
 		} else {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
@@ -95,7 +97,7 @@ public class CategoryController extends HttpServlet {
 				e.printStackTrace();
 			}
 			categoryService.insert(category);
-			response.sendRedirect(request.getContextPath() + "/admin/categories");
+			response.sendRedirect(request.getContextPath() + "/admin/category");
 		} else if (uri.contains("edit")) {
 			int id = Integer.parseInt(request.getParameter("id"));
 			String name = request.getParameter("categoryname");
@@ -122,7 +124,7 @@ public class CategoryController extends HttpServlet {
 	                e.printStackTrace();
 	            }
 				categoryService.update(category);
-				response.sendRedirect(request.getContextPath() + "/admin/categories");
+				response.sendRedirect(request.getContextPath() + "/admin/category");
 			}
 		} 
 	}
