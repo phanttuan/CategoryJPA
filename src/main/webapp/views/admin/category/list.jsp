@@ -3,43 +3,91 @@
 <%@taglib prefix="c" uri="jakarta.tags.core"%>
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <title>Category CRUD</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8"/>
+    <title>Quản lý danh mục</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 24px; }
+        .container { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background: #eaf3ff; }
+        .actions a { margin-right: 8px; }
+        .panel { border: 1px solid #c6d5e3; border-radius: 6px; }
+        .panel h3 { margin: 0; padding: 10px 12px; background: #d7ebf7; }
+        .panel .body { padding: 12px; }
+        input[type=text] { width: 100%; padding: 8px; margin: 6px 0 12px; box-sizing: border-box; }
+        button { padding: 8px 14px; }
+    </style>
 </head>
 <body>
-<a href="<%=request.getContextPath()%>/logout">🚪 Logout</a>
-<div class="container mt-5">
-    <h2 class="mb-4">Category List</h2>
-    <table class="table table-striped table-bordered">
-        <thead class="table-dark">
-        <tr>
-            <th>STT</th>
-            <th>Category Name</th>
-            <th>Image</th>
-            <th>Category ID</th>
-        </tr>
-        </thead>
-        <tbody>
-        <c:forEach items="${categories}" var="cate" varStatus="STT">
-            <tr>
-                <td>${STT.index + 1}</td>
-                <td>${cate.categoryname}</td>
-                <td><img src="${pageContext.request.contextPath}/image?fname=${cate.images}"/></td>
-                <td>${cate.id}</td>
-                <td>
-                    <a href="<c:url value='/admin/category/edit?id=${cate.id}'/>" class="btn btn-sm btn-primary">Edit</a>
-                    <a href="<c:url value='/admin/category/delete?id=${cate.id}'/>" class="btn btn-sm btn-danger">Delete</a>
-                </td>
-            </tr>
-        </c:forEach>
-        </tbody>
-    </table>
-    <a href="<%=request.getContextPath()%>/admin/category/add" class="btn btn-success" >Add New Category</a>
-</div>
+<h2>Quản lý danh mục</h2>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<div class="container">
+    <div>
+        <div class="panel">
+            <h3>Danh sách danh mục</h3>
+            <div class="body">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên danh mục</th>
+                        <th>Hình ảnh</th>
+                        <th>Hành động</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach var="cate" items="${categories}">
+                        <tr>
+                            <td>${cate.id}</td>
+                            <td>${cate.categoryname}</td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${not empty cate.images}">
+                                        <img src="${pageContext.request.contextPath}/image?fname=${cate.images}" alt="image" style="height:20px"/>
+                                    </c:when>
+                                    <c:otherwise>-</c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td class="actions">
+                                <a href="<c:url value='/admin/category/edit?id=${cate.id}'/>">Cập nhật</a>
+                                <a href="<c:url value='/admin/category/delete?id=${cate.id}'/>"
+                                   onclick="return confirm('Xóa danh mục này?')">Xóa</a>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="panel">
+            <h3><c:if test="${empty category}">Thêm danh mục</c:if><c:if test="${not empty category}">Cập nhật danh mục</c:if></h3>
+            <div class="body">
+                <c:set var="isEdit" value="${not empty category}"/>
+                <form method="post"
+                      action="${pageContext.request.contextPath}<c:out value='${isEdit ? "/admin/category/update" : "/admin/category/add"}'/>">
+                    <c:if test="${isEdit}">
+                        <input type="hidden" name="id" value="${category.id}"/>
+                    </c:if>
+                    <label>Tên danh mục</label>
+                    <input type="text" name="categoryname" value="<c:out value='${isEdit ? category.categoryname : ""}'/>" required/>
+
+                    <label>Hình ảnh (tên file)</label>
+                    <input type="text" name="images" value="<c:out value='${isEdit ? category.images : ""}'/>"/>
+
+                    <button type="submit">Submit</button>
+                    <c:if test="${isEdit}">
+                        <a href="${pageContext.request.contextPath}/admin/category" style="margin-left:8px;">Hủy</a>
+                    </c:if>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
