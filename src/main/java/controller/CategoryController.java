@@ -82,9 +82,18 @@ public class CategoryController extends HttpServlet {
 				categories = categoryService.findAll();
 			}
 			request.setAttribute("categories", categories);
-			request.getRequestDispatcher("/views/admin/category/list.jsp").forward(request, response);
+			// forward to role-specific list view
+			if (uri.startsWith(context + "/manager")) {
+				request.getRequestDispatcher("/views/manager/category/list.jsp").forward(request, response);
+			} else if (uri.startsWith(context + "/user")) {
+				request.getRequestDispatcher("/views/user/category/list.jsp").forward(request, response);
+			} else {
+				request.getRequestDispatcher("/views/admin/category/list.jsp").forward(request, response);
+			}
 		} else if (uri.contains("add")) {
-			request.getRequestDispatcher("/views/admin/category/add.jsp").forward(request, response);
+			if (uri.startsWith(context + "/manager")) request.getRequestDispatcher("/views/manager/category/add.jsp").forward(request, response);
+			else if (uri.startsWith(context + "/user")) request.getRequestDispatcher("/views/user/category/add.jsp").forward(request, response);
+			else request.getRequestDispatcher("/views/admin/category/add.jsp").forward(request, response);
 		} else if (uri.contains("edit")) {
 			int id = Integer.parseInt(request.getParameter("id"));
 			Category category = categoryService.findById(id);
@@ -96,7 +105,9 @@ public class CategoryController extends HttpServlet {
 			request.setAttribute("category", category);
 			List<Category> categories = categoryService.findAll();
 			request.setAttribute("categories", categories);
-			request.getRequestDispatcher("/views/admin/category/edit.jsp").forward(request, response);
+			if (uri.startsWith(context + "/manager")) request.getRequestDispatcher("/views/manager/category/edit.jsp").forward(request, response);
+			else if (uri.startsWith(context + "/user")) request.getRequestDispatcher("/views/user/category/edit.jsp").forward(request, response);
+			else request.getRequestDispatcher("/views/admin/category/edit.jsp").forward(request, response);
 		} else if (uri.contains("delete")) {
 			int id = Integer.parseInt(request.getParameter("id"));
 			Category category = categoryService.findById(id);
