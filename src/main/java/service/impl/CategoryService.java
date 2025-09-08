@@ -22,6 +22,11 @@ public class CategoryService implements ICategoryService{
 	}
 
 	@Override
+	public List<Category> findByUser(int userId) {
+		return categoryDAO.findByUser(userId);
+	}
+
+	@Override
 	public void update(Category category) {
 		if(categoryDAO.findById(category.getId()) != null) {
 			categoryDAO.update(category);

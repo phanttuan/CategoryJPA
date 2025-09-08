@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 
 import entity.Category;
+import entity.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -15,6 +16,7 @@ import jakarta.servlet.http.Part;
 import service.ICategoryService;
 import service.impl.CategoryService;
 import util.Constant;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * Servlet implementation class CategoryController
@@ -23,8 +25,11 @@ import util.Constant;
 	    fileSizeThreshold = 1024 * 1024 * 2, // 2MB
 	    maxFileSize = 1024 * 1024 * 10,      // 10MB
 	    maxRequestSize = 1024 * 1024 * 50 )
-@WebServlet(urlPatterns = { "/admin/categories", "/admin/category", "/admin/category/add", "/admin/category/edit",
-		"/admin/category/delete" })
+@WebServlet(urlPatterns = { 
+	"/admin/categories", "/admin/category", "/admin/category/add", "/admin/category/edit",
+	"/admin/category/delete", "/admin/home",
+	"/manager/categories", "/manager/home", "/manager/category", "/manager/category/add", "/manager/category/edit", "/manager/category/delete",
+	"/user/categories", "/user/home", "/user/category", "/user/category/add", "/user/category/edit", "/user/category/delete" })
 public class CategoryController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -42,8 +47,40 @@ public class CategoryController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ICategoryService categoryService = new CategoryService();
 		String uri = request.getRequestURI();
-		if (uri.contains("categories") || uri.equals(request.getContextPath() + "/admin/category")) {
-			List<Category> categories = categoryService.findAll();
+		String context = request.getContextPath();
+		HttpSession session = request.getSession(false);
+		User current = null;
+		if (session != null) {
+			Object o = session.getAttribute("user");
+			if (o instanceof User) current = (User) o;
+		}
+
+		if (uri.endsWith("/admin/home")) {
+			response.sendRedirect(context + "/admin/categories");
+			return;
+		}
+		if (uri.endsWith("/manager/home")) {
+			response.sendRedirect(context + "/manager/categories");
+			return;
+		}
+		if (uri.endsWith("/user/home")) {
+			response.sendRedirect(context + "/user/categories");
+			return;
+		}
+
+		if (uri.contains("categories") || uri.equals(context + "/admin/category") || uri.equals(context + "/manager/category") || uri.equals(context + "/user/category")) {
+			List<Category> categories;
+			if (uri.startsWith(context + "/manager")) {
+				// manager sees only their own categories
+				if (current == null) {
+					response.sendRedirect(context + "/login");
+					return;
+				}
+				categories = categoryService.findByUser(current.getId());
+			} else {
+				// admin and user see all categories
+				categories = categoryService.findAll();
+			}
 			request.setAttribute("categories", categories);
 			request.getRequestDispatcher("/views/admin/category/list.jsp").forward(request, response);
 		} else if (uri.contains("add")) {
@@ -51,14 +88,27 @@ public class CategoryController extends HttpServlet {
 		} else if (uri.contains("edit")) {
 			int id = Integer.parseInt(request.getParameter("id"));
 			Category category = categoryService.findById(id);
+			// only owner or admin can edit
+			if (current == null || (category.getUser() != null && category.getUser().getId() != current.getId() && current.getRoleid() != 3)) {
+				response.sendError(HttpServletResponse.SC_FORBIDDEN);
+				return;
+			}
 			request.setAttribute("category", category);
 			List<Category> categories = categoryService.findAll();
 			request.setAttribute("categories", categories);
 			request.getRequestDispatcher("/views/admin/category/edit.jsp").forward(request, response);
 		} else if (uri.contains("delete")) {
 			int id = Integer.parseInt(request.getParameter("id"));
+			Category category = categoryService.findById(id);
+			if (current == null || (category.getUser() != null && category.getUser().getId() != current.getId() && current.getRoleid() != 3)) {
+				response.sendError(HttpServletResponse.SC_FORBIDDEN);
+				return;
+			}
 			categoryService.delete(id);
-			response.sendRedirect(request.getContextPath() + "/admin/category");
+			// redirect back to the appropriate listing
+			if (uri.startsWith(context + "/manager")) response.sendRedirect(context + "/manager/categories");
+			else if (uri.startsWith(context + "/user")) response.sendRedirect(context + "/user/categories");
+			else response.sendRedirect(context + "/admin/categories");
 		} else {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
@@ -72,11 +122,20 @@ public class CategoryController extends HttpServlet {
 			throws ServletException, IOException {
 		ICategoryService categoryService = new CategoryService();
 		String uri = request.getRequestURI();
+		String context = request.getContextPath();
+		HttpSession session = request.getSession(false);
+		User current = null;
+		if (session != null) {
+			Object o = session.getAttribute("user");
+			if (o instanceof User) current = (User) o;
+		}
 		if (uri.contains("add")) {
 			String name = request.getParameter("categoryname");
 			Category category = new Category();
 			category.setCategoryname(name);
 			category.setImages("1.jpg");
+			// set owner to currently logged in user if available
+			if (current != null) category.setUser(current);
 			String fname = "";
 			String uploadPath = Constant.upload;
 			File uploadDir = new File(uploadPath);
@@ -97,34 +156,43 @@ public class CategoryController extends HttpServlet {
 				e.printStackTrace();
 			}
 			categoryService.insert(category);
-			response.sendRedirect(request.getContextPath() + "/admin/category");
+			if (uri.startsWith(context + "/manager")) response.sendRedirect(context + "/manager/categories");
+			else if (uri.startsWith(context + "/user")) response.sendRedirect(context + "/user/categories");
+			else response.sendRedirect(context + "/admin/categories");
 		} else if (uri.contains("edit")) {
 			int id = Integer.parseInt(request.getParameter("id"));
 			String name = request.getParameter("categoryname");
 			Category category = categoryService.findById(id);
 			if (category != null) {
+				// only owner or admin can update
+				if (current == null || (category.getUser() != null && category.getUser().getId() != current.getId() && current.getRoleid() != 3)) {
+					response.sendError(HttpServletResponse.SC_FORBIDDEN);
+					return;
+				}
 				category.setCategoryname(name);
 				String fname = "";
-	            String uploadPath = Constant.upload;
-	            File uploadDir = new File(uploadPath);
-	            if(!uploadDir.exists()) {
-	                uploadDir.mkdir();
-	            }
-	            try {
-	                Part filePart = request.getPart("images");
-	                if(filePart.getSize() > 0) {
-	                    fname = filePart.getSubmittedFileName();
-	                    int index = fname.lastIndexOf(".");
-	                    String ext = fname.substring(index);
-	                    fname = System.currentTimeMillis() + ext;
-	                    filePart.write(uploadPath + File.separator + fname);
-	                    category.setImages(fname);
-	                } 
-	            } catch (Exception e) {
-	                e.printStackTrace();
-	            }
+				String uploadPath = Constant.upload;
+				File uploadDir = new File(uploadPath);
+				if(!uploadDir.exists()) {
+					uploadDir.mkdir();
+				}
+				try {
+					Part filePart = request.getPart("images");
+					if(filePart.getSize() > 0) {
+						fname = filePart.getSubmittedFileName();
+						int index = fname.lastIndexOf(".");
+						String ext = fname.substring(index);
+						fname = System.currentTimeMillis() + ext;
+						filePart.write(uploadPath + File.separator + fname);
+						category.setImages(fname);
+					} 
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				categoryService.update(category);
-				response.sendRedirect(request.getContextPath() + "/admin/category");
+				if (uri.startsWith(context + "/manager")) response.sendRedirect(context + "/manager/categories");
+				else if (uri.startsWith(context + "/user")) response.sendRedirect(context + "/user/categories");
+				else response.sendRedirect(context + "/admin/categories");
 			}
 		} 
 	}
