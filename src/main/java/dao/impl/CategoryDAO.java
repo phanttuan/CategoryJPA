@@ -7,6 +7,7 @@ import dao.ICategoryDAO;
 import entity.Category;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.TypedQuery;
 
 public class CategoryDAO implements ICategoryDAO {
 
@@ -31,6 +32,22 @@ public class CategoryDAO implements ICategoryDAO {
 		List<Category> categories = null;
 		try {
 			categories = em.createNamedQuery("Category.findAll", Category.class).getResultList();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			em.close();
+		}
+		return categories;
+	}
+
+	public List<Category> findByUser(int userId) {
+		EntityManager em = JPAConfig.em();
+		List<Category> categories = null;
+		try {
+			TypedQuery<Category> q = em.createQuery("SELECT c FROM Category c WHERE c.user.id = :uid", Category.class);
+			q.setParameter("uid", userId);
+			categories = q.getResultList();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;

@@ -9,6 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 @Table(name = "categories")
@@ -26,11 +28,21 @@ public class Category implements Serializable {
 	@Column(name = "images")
 	private String images;
 
+    @ManyToOne
+    @JoinColumn(name = "userid")
+    private User user;
+
 	public Category(int id, String categoryname, String images) {
 		super();
 		this.id = id;
 		this.categoryname = categoryname;
 		this.images = images;
+	}
+	public Category(int id, String categoryname, String images, User user) {
+		this.id = id;
+		this.categoryname = categoryname;
+		this.images = images;
+		this.user = user;
 	}
 	public Category() {
 		
@@ -57,6 +69,14 @@ public class Category implements Serializable {
 
 	public void setImages(String images) {
 		this.images = images;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 	
 }
