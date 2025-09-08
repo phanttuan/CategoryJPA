@@ -141,6 +141,14 @@ public class CategoryController extends HttpServlet {
 			if (o instanceof User) current = (User) o;
 		}
 		if (uri.contains("add")) {
+			// Only allow add for your own role (not admin adding for others)
+			if (current == null || 
+				(uri.startsWith(context + "/manager") && current.getRoleid() != 2) ||
+				(uri.startsWith(context + "/user") && current.getRoleid() != 1) ||
+				(uri.startsWith(context + "/admin") && current.getRoleid() != 3)) {
+				response.sendError(HttpServletResponse.SC_FORBIDDEN);
+				return;
+			}
 			String name = request.getParameter("categoryname");
 			Category category = new Category();
 			category.setCategoryname(name);

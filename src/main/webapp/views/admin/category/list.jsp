@@ -23,6 +23,7 @@
 </head>
 <body>
 <h2>Quản lý danh mục</h2>
+<p><a href="${pageContext.request.contextPath}/logout">Logout</a></p>
 
 <div class="container">
     <div>
@@ -52,9 +53,14 @@
                                 </c:choose>
                             </td>
                             <td class="actions">
-                                <a href="<c:url value='/admin/category/edit?id=${cate.id}'/>">Cập nhật</a>
-                                <a href="<c:url value='/admin/category/delete?id=${cate.id}'/>"
-                                   onclick="return confirm('Xóa danh mục này?')">Xóa</a>
+                                <c:if test="${cate.user.id == sessionScope.user.id}">
+                                    <a href="<c:url value='/admin/category/edit?id=${cate.id}'/>">Cập nhật</a>
+                                    <a href="<c:url value='/admin/category/delete?id=${cate.id}'/>"
+                                       onclick="return confirm('Xóa danh mục này?')">Xóa</a>
+                                </c:if>
+                                <c:if test="${cate.user.id != sessionScope.user.id}">
+                                    <span style="color:gray;">Không thể sửa/xóa</span>
+                                </c:if>
                             </td>
                         </tr>
                     </c:forEach>

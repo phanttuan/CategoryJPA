@@ -16,7 +16,7 @@
         .panel { border: 1px solid #c6d5e3; border-radius: 6px; }
         .panel h3 { margin: 0; padding: 10px 12px; background: #eef6ff; }
         .panel .body { padding: 12px; }
-        input[type=text] { width: 100%; padding: 8px; margin: 6px 0 12px; box-sizing: border-box; }
+        input[type=text], input[type=file] { width: 100%; padding: 8px; margin: 6px 0 12px; box-sizing: border-box; }
         button { padding: 8px 14px; }
     </style>
 </head>
@@ -51,8 +51,13 @@
                                 </c:choose>
                             </td>
                             <td class="actions">
-                                <a href="${pageContext.request.contextPath}/user/category/edit?id=${cate.id}">Sửa</a>
-                                <a href="${pageContext.request.contextPath}/user/category/delete?id=${cate.id}" onclick="return confirm('Xóa danh mục này?')">Xóa</a>
+                                <c:if test="${cate.user.id == sessionScope.user.id}">
+                                    <a href="${pageContext.request.contextPath}/user/category/edit?id=${cate.id}">Sửa</a>
+                                    <a href="${pageContext.request.contextPath}/user/category/delete?id=${cate.id}" onclick="return confirm('Xóa danh mục này?')">Xóa</a>
+                                </c:if>
+                                <c:if test="${cate.user.id != sessionScope.user.id}">
+                                    <span style="color:gray;">Không thể sửa/xóa</span>
+                                </c:if>
                             </td>
                         </tr>
                     </c:forEach>
@@ -60,6 +65,22 @@
                 </table>
                 <br/>
                 <a href="${pageContext.request.contextPath}/user/category/add">Thêm danh mục</a>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="panel">
+            <h3>Thêm danh mục mới</h3>
+            <div class="body">
+                <form action="${pageContext.request.contextPath}/user/category/add" method="post" enctype="multipart/form-data">
+                    <label>Tên danh mục</label>
+                    <input type="text" name="categoryname" required/>
+
+                    <label>Hình ảnh</label>
+                    <input type="file" name="images" accept="image/*"/>
+
+                    <button type="submit">Thêm</button>
+                </form>
             </div>
         </div>
     </div>
