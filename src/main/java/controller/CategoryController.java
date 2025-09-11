@@ -22,8 +22,8 @@ import jakarta.servlet.http.HttpSession;
  * Servlet implementation class CategoryController
  */
 @MultipartConfig(
-	    fileSizeThreshold = 1024 * 1024 * 2, // 2MB
-	    maxFileSize = 1024 * 1024 * 10,      // 10MB
+	    fileSizeThreshold = 1024 * 1024 * 2,
+	    maxFileSize = 1024 * 1024 * 10, 
 	    maxRequestSize = 1024 * 1024 * 50 )
 @WebServlet(urlPatterns = { 
 	"/admin/categories", "/admin/category", "/admin/category/add", "/admin/category/edit",

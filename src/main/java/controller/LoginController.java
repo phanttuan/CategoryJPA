@@ -32,6 +32,7 @@ public class LoginController extends HttpServlet {
         if (user != null) {
             HttpSession session = req.getSession();
             session.setAttribute("user", user);
+            session.setAttribute("role", user.getRoleid()); 
             int role = user.getRoleid();
             String context = req.getContextPath();
             switch (role) {

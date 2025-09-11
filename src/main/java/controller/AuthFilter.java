@@ -19,7 +19,6 @@ public class AuthFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        // no-op
     }
 
     @Override
@@ -61,6 +60,5 @@ public class AuthFilter implements Filter {
 
     @Override
     public void destroy() {
-        // no-op
     }
 }
