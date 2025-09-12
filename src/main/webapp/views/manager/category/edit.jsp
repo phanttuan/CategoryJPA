@@ -27,9 +27,14 @@
                     <input type="text" class="form-control" name="categoryname" value="${category.categoryname}" required/>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Hình ảnh (tên file)</label>
-                    <input type="text" class="form-control mb-2" name="images" value="${category.images}"/>
-                    <input type="file" class="form-control" name="imageFile" accept="image/*"/>
+                    <label class="form-label">Hình ảnh hiện tại</label><br/>
+                    <c:if test="${not empty category.images}">
+                        <img src="${pageContext.request.contextPath}/image?fname=${category.images}" alt="Ảnh danh mục" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid #ccc;"/>
+                    </c:if>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Hình ảnh mới (chọn file nếu muốn thay đổi)</label>
+                    <input type="file" class="form-control" name="images" accept="image/*"/>
                 </div>
                 <div class="d-flex gap-2">
                     <button type="submit" class="btn btn-success">Cập nhật</button>

@@ -42,4 +42,19 @@ public class UserDAO implements IUserDAO {
             em.close();
         }
     }
+
+    @Override
+    public void update(User user) {
+        EntityManager em = JPAConfig.em();
+        try {
+            em.getTransaction().begin();
+            em.merge(user);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
 }

@@ -32,6 +32,15 @@ public class User implements Serializable {
     @Column(name = "roleid")
     private int roleid;
 
+    @Column(name = "fullname", length = 100)
+    private String fullname;
+
+    @Column(name = "phone", length = 20)
+    private String phone;
+
+    @Column(name = "images", length = 255)
+    private String images;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Category> categories = new ArrayList<>();
 
@@ -43,6 +52,16 @@ public class User implements Serializable {
         this.username = username;
         this.password = password;
         this.roleid = roleid;
+    }
+
+    public User(int id, String username, String password, int roleid, String fullname, String phone, String images) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.roleid = roleid;
+        this.fullname = fullname;
+        this.phone = phone;
+        this.images = images;
     }
 
     public int getId() {
@@ -75,6 +94,30 @@ public class User implements Serializable {
 
     public void setRoleid(int roleid) {
         this.roleid = roleid;
+    }
+
+    public String getFullname() {
+        return fullname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getImages() {
+        return images;
+    }
+
+    public void setImages(String images) {
+        this.images = images;
     }
 
     public List<Category> getCategories() {

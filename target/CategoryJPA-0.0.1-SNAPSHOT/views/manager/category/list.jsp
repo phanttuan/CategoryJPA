@@ -93,27 +93,16 @@
 			</div>
 			<div class="card-body">
 				<c:set var="isEdit" value="${not empty category}" />
-				<form method="post"
-					action="${pageContext.request.contextPath}<c:out value='${isEdit ? "/admin/category/update" : "/admin/category/add"}'/>">
-					<c:if test="${isEdit}">
-						<input type="hidden" name="id" value="${category.id}" />
-					</c:if>
+				<form method="post" action="${pageContext.request.contextPath}/manager/category/add" enctype="multipart/form-data">
 					<div class="mb-3">
 						<label class="form-label">Tên danh mục</label>
-						<input type="text" class="form-control" name="categoryname"
-							value="<c:out value='${isEdit ? category.categoryname : ""}'/>"
-							required />
+						<input type="text" class="form-control" name="categoryname" required />
 					</div>
 					<div class="mb-3">
-						<label class="form-label">Hình ảnh (tên file)</label>
-						<input type="text" class="form-control" name="images"
-							value="<c:out value='${isEdit ? category.images : ""}'/>" />
+						<label class="form-label">Hình ảnh</label>
+						<input type="file" class="form-control" name="images" accept="image/*" />
 					</div>
-					<button type="submit" class="btn btn-success w-100">Submit</button>
-					<c:if test="${isEdit}">
-						<a href="${pageContext.request.contextPath}/admin/category"
-							class="btn btn-secondary w-100 mt-2">Hủy</a>
-					</c:if>
+					<button type="submit" class="btn btn-success w-100">Thêm</button>
 				</form>
 			</div>
 		</div>

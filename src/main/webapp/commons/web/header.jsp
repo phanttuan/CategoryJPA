@@ -34,6 +34,22 @@
         <li class="nav-item">
           <a class="nav-link" href="#">Contact</a>
         </li>
+        <li class="nav-item">
+          <c:choose>
+            <c:when test="${sessionScope.role eq 1}">
+              <a class="nav-link" href="${pageContext.request.contextPath}/user/profile">Profile</a>
+            </c:when>
+            <c:when test="${sessionScope.role eq 2}">
+              <a class="nav-link" href="${pageContext.request.contextPath}/manager/profile">Profile</a>
+            </c:when>
+            <c:when test="${sessionScope.role eq 3}">
+              <a class="nav-link" href="${pageContext.request.contextPath}/admin/profile">Profile</a>
+            </c:when>
+          </c:choose>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-danger" href="${pageContext.request.contextPath}/logout">Logout</a>
+        </li>
       </ul>
     </div>
   </div>

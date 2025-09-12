@@ -9,7 +9,7 @@
 <body>
 <h2>Thêm danh mục của tôi</h2>
 <p><a href="${pageContext.request.contextPath}/user/home">Back</a> | <a href="${pageContext.request.contextPath}/logout">Logout</a></p>
-<form action="${pageContext.request.contextPath}/user/category/add" method="post" enctype="multipart/form-data">
+<form method="post" action="${pageContext.request.contextPath}/user/category/add" enctype="multipart/form-data">
     <label>Tên danh mục</label>
     <input type="text" name="categoryname" required />
 
@@ -17,7 +17,7 @@
     <input type="file" name="images" accept="image/*" />
 
     <button type="submit">Thêm</button>
-    <a href="${pageContext.request.contextPath}/user/home">Hủy</a>
+    <a href="${pageContext.request.contextPath}/user/category" class="text-decoration-none">Hủy</a>
 </form>
 </body>
 </html>

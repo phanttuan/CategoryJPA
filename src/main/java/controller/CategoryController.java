@@ -45,6 +45,8 @@ public class CategoryController extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
 		ICategoryService categoryService = new CategoryService();
 		String uri = request.getRequestURI();
 		String context = request.getContextPath();
@@ -130,7 +132,9 @@ public class CategoryController extends HttpServlet {
 	 *      response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+            throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
 		ICategoryService categoryService = new CategoryService();
 		String uri = request.getRequestURI();
 		String context = request.getContextPath();
