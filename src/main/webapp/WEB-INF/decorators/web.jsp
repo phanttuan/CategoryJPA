@@ -15,7 +15,15 @@
             <%@ include file="/commons/web/header.jsp"%>
         </header>
         <main>
-            <sitemesh:write property="body" />
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-10">
+                    <div class="card shadow-lg rounded-4 border-0 my-4 bg-white bg-opacity-75">
+                        <div class="card-body p-5">
+                            <sitemesh:write property="body" />
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
         <footer class="mt-4">
             <%@ include file="/commons/web/footer.jsp"%>
